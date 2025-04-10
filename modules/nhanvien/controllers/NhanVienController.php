@@ -7,42 +7,52 @@ use app\modules\nhanvien\models\NhanVien;
 use app\modules\nhanvien\models\search\NhanVienSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use app\modules\nhanvien\models\To;
-//use yii\filters\AccessControl;
-use yii\helpers\Html;
-use yii\helpers\ArrayHelper;
-
-//use yii\filters\VerbFilter;
+use yii\filters\VerbFilter;
 use \yii\web\Response;
+use yii\helpers\Html;
+use yii\filters\AccessControl;
+
 /**
  * NhanVienController implements the CRUD actions for NhanVien model.
  */
 class NhanVienController extends Controller
 {
-   
+    /**
+     * @inheritdoc
+     */
+    public function behaviors() {
+		return [
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'actions' => ['index', 'view', 'update','create','delete','bulkdelete'],
+						'allow' => true,
+						'roles' => ['@'],
+					],
+				],
+			],
+			'verbs' => [
+				'class' => VerbFilter::className(),
+				'actions' => [
+					'delete' => ['POST'],
+				],
+			],
+		];
+	}
 
     /**
      * Lists all NhanVien models.
      * @return mixed
      */
-    public function beforeAction($action)
-	{
-	    Yii::$app->params['moduleID'] = 'Module Quản lý Nhân viên';
-	    Yii::$app->params['modelID'] = 'Quản lý Nhân viên';
-	    return true;
-	}
-    
     public function actionIndex()
     {    
         $searchModel = new NhanVienSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->query->andWhere(['doi_tuong' => ['1', '0']]);
-        $pagination = $dataProvider->getPagination();
-        $pagination->pageSize = 20;
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'pagination' =>$pagination,
         ]);
     }
 
@@ -62,8 +72,8 @@ class NhanVienController extends Controller
                     'content'=>$this->renderAjax('view', [
                         'model' => $this->findModel($id),
                     ]),
-                    'footer'=> Html::button('<i class="fa fa-close"> </i> Đóng lại',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
-                            Html::a('<i class="fa fa-pencil"></i> Sửa',['update','id'=>$id],['class'=>'btn btn-primary','role'=>'modal-remote'])
+                    'footer'=> Html::button('Đóng lại',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
+                            Html::a('Sửa',['update','id'=>$id],['class'=>'btn btn-primary','role'=>'modal-remote'])
                 ];    
         }else{
             return $this->render('view', [
@@ -81,43 +91,44 @@ class NhanVienController extends Controller
     public function actionCreate()
     {
         $request = Yii::$app->request;
-        $model = new NhanVien();
+        $model = new NhanVien();  
 
-        if ($request->isAjax) {
+        if($request->isAjax){
             /*
             *   Process for ajax request
             */
             Yii::$app->response->format = Response::FORMAT_JSON;
-            if ($request->isGet) {
+            if($request->isGet){
                 return [
-                    'title' => "Thêm Nhân viên",
-                    'content' => $this->renderAjax('create', [
+                    'title'=> "Thêm Nhân viên",
+                    'content'=>$this->renderAjax('create', [
                         'model' => $model,
-                       
                     ]),
-                    'footer' => Html::button('Đóng lại', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"]) .
-                                Html::button('Lưu lại', ['class' => 'btn btn-primary', 'type' => "submit"])
-                ];
-            } else if ($model->load($request->post()) && $model->save()) {
+                    'footer'=> Html::button('Đóng lại',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
+                                Html::button('Lưu lại',['class'=>'btn btn-primary','type'=>"submit"])
+        
+                ];         
+            }else if($model->load($request->post()) && $model->save()){
                 return [
-                    'forceReload' => '#crud-datatable-pjax',
-                    'title' => "Thêm Nhân Viên",
-                    'content' => '<span class="text-success">Thêm Nhân viên thành công</span>',
-                    'footer' => Html::button(' <i class ="fa fa-close"></i> Đóng lại', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"]) .
-                                Html::a('Tiếp tục thêm', ['create'], ['class' => 'btn btn-primary', 'role' => 'modal-remote'])
-                ];
-            } else {
+                    'forceReload'=>'#crud-datatable-pjax',
+                    'title'=> "Thêm nhân viên",
+                    'content'=>'<span class="text-success">Thêm nhân viên thành công !</span>',
+                    'footer'=> Html::button('Đóng lại',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
+                            Html::a('Tiếp tục tạo',['create'],['class'=>'btn btn-primary','role'=>'modal-remote'])
+        
+                ];         
+            }else{           
                 return [
-                    'title' => "Thêm Nhân viên",
-                    'content' => $this->renderAjax('create', [
+                    'title'=> "Thêm nhân viên",
+                    'content'=>$this->renderAjax('create', [
                         'model' => $model,
-                        
                     ]),
-                    'footer' => Html::button('Đóng lại', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"]) .
-                                Html::button('Lưu lại', ['class' => 'btn btn-primary', 'type' => "submit"])
-                ];
+                    'footer'=> Html::button('Đóng lại',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
+                                Html::button('Lưu lại',['class'=>'btn btn-primary','type'=>"submit"])
+        
+                ];         
             }
-        } else {
+        }else{
             /*
             *   Process for non-ajax request
             */
@@ -126,12 +137,11 @@ class NhanVienController extends Controller
             } else {
                 return $this->render('create', [
                     'model' => $model,
-                   
                 ]);
             }
         }
+       
     }
-    
 
     /**
      * Updates an existing NhanVien model.
@@ -141,25 +151,25 @@ class NhanVienController extends Controller
      * @return mixed
      */
     public function actionUpdate($id)
-{
-    $request = Yii::$app->request;
-    $model = $this->findModel($id);       
+    {
+        $request = Yii::$app->request;
+        $model = $this->findModel($id);       
 
-    if($request->isAjax){
-        /*
-        *   Process for ajax request
-        */
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        if($request->isGet){
-            return [
-                'title'=> "Cập nhật Nhân viên #".$id,
-                'content'=>$this->renderAjax('update', [
-                    'model' => $model,
-                ]),
-                'footer'=> Html::button('Đóng lại',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
-                            Html::button('Sửa',['class'=>'btn btn-primary','type'=>"submit"])
-            ];         
-        }else if ($model->load($request->post()) && $model->save()){
+        if($request->isAjax){
+            /*
+            *   Process for ajax request
+            */
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            if($request->isGet){
+                return [
+                    'title'=> "Cập nhật nhân viên #".$id,
+                    'content'=>$this->renderAjax('update', [
+                        'model' => $model,
+                    ]),
+                    'footer'=> Html::button('Đóng lại',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
+                                Html::button('Lưu lại',['class'=>'btn btn-primary','type'=>"submit"])
+                ];         
+            }else if($model->load($request->post()) && $model->save()){
                 return [
                     'forceReload'=>'#crud-datatable-pjax',
                     'title'=> "Nhân viên #".$id,
@@ -169,31 +179,29 @@ class NhanVienController extends Controller
                     'footer'=> Html::button('Đóng lại',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
                             Html::a('Sửa',['update','id'=>$id],['class'=>'btn btn-primary','role'=>'modal-remote'])
                 ];    
+            }else{
+                 return [
+                    'title'=> "Cập nhật nhân viên #".$id,
+                    'content'=>$this->renderAjax('update', [
+                        'model' => $model,
+                    ]),
+                    'footer'=> Html::button('Đóng lại',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
+                                Html::button('Lưu lại',['class'=>'btn btn-primary','type'=>"submit"])
+                ];        
+            }
         }else{
-             return [
-                'title'=> "Cập nhật Nhân viên #".$id,
-                'content'=>$this->renderAjax('update', [
+            /*
+            *   Process for non-ajax request
+            */
+            if ($model->load($request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('update', [
                     'model' => $model,
-                ]),
-                'footer'=> Html::button('Đóng lại ',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
-                            Html::button('Lưu lại ',['class'=>'btn btn-primary','type'=>"submit"])
-            ];        
-        }
-    }else{
-        /*
-        *   Process for non-ajax request
-        */
-        if ($model->load($request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-               
-            ]);
+                ]);
+            }
         }
     }
-}
-
 
     /**
      * Delete an existing NhanVien model.
@@ -233,7 +241,7 @@ class NhanVienController extends Controller
     public function actionBulkdelete()
     {        
         $request = Yii::$app->request;
-        $pks = explode(',', $request->post( 'pks' )); 
+        $pks = explode(',', $request->post( 'pks' )); // Array or selected records primary keys
         foreach ( $pks as $pk ) {
             $model = $this->findModel($pk);
             $model->delete();
@@ -269,17 +277,4 @@ class NhanVienController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-    public function actionGetToList($id_phong_ban)
-    {
-       
-        $tos = To::find()->where(['id_phong_ban' => $id_phong_ban])->all();
-        
-        if (empty($tos)) {
-            return json_encode(['no_to' => 'Trống']);
-        }
-        $listTo = ArrayHelper::map($tos, 'id', 'ten_to');
-        return json_encode($listTo);
-    }
-
-
 }

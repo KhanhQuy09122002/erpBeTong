@@ -2,7 +2,7 @@
 
 namespace app\modules\nhanvien\models\search;
 
-
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\modules\nhanvien\models\PhongBan;
@@ -19,7 +19,7 @@ class PhongBanSearch extends PhongBan
     {
         return [
             [['id', 'nguoi_tao'], 'integer'],
-            [['ten_phong_ban', 'thoi_gian_tao'], 'safe'],
+            [['ten_phong_ban', 'ghi_chu', 'thoi_gian_tao'], 'safe'],
         ];
     }
 
@@ -61,7 +61,8 @@ class PhongBanSearch extends PhongBan
             'thoi_gian_tao' => $this->thoi_gian_tao,
         ]);
 
-        $query->andFilterWhere(['like', 'ten_phong_ban', $this->ten_phong_ban]);
+        $query->andFilterWhere(['like', 'ten_phong_ban', $this->ten_phong_ban])
+            ->andFilterWhere(['like', 'ghi_chu', $this->ghi_chu]);
 
         return $dataProvider;
     }

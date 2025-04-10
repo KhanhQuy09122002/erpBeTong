@@ -1,52 +1,12 @@
 <?php
-
 namespace app\modules\nhanvien\models;
-use Yii;
 
+use app\modules\nhanvien\models\base\PhongBanBase;
 
-/**
- * This is the model class for table "nv_phong_ban".
- *
- * @property int $id
- * @property string $ten_phong_ban
- * @property int|null $nguoi_tao
- * @property string|null $thoi_gian_tao
- */
-class PhongBan extends \app\models\NvPhongBan
+class PhongBan extends PhongBanBase
 {
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
+    public function getNvNhanViens()
     {
-        return 'nv_phong_ban';
+        return $this->hasMany(NhanVien::class, ['id_phong_ban' => 'id']);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['ten_phong_ban'], 'required'],
-            [['nguoi_tao'], 'integer'],
-            [['thoi_gian_tao'], 'safe'],
-            [['ten_phong_ban'], 'string', 'max' => 255],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'ten_phong_ban' => 'Ten Phong Ban',
-            'nguoi_tao' => 'Nguoi Tao',
-            'thoi_gian_tao' => 'Thoi Gian Tao',
-        ];
-    }
-    
-    
 }

@@ -1,10 +1,8 @@
-<?php
-use app\modules\nhanvien\models\NhanVien;
-?>
 <li class="slide">
 	<a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0);">
-		<span class="side-menu__icon"><i class="fe fe-users side_menu_img"></i></span>
-		<span class="side-menu__label">Quản lý nhân viên</span><i class="angle fe fe-chevron-right"></i>
+		<!-- <span class="side-menu__icon"><i class="fe fe-lock side_menu_img"></i></span> -->
+		<!-- <span class="side-menu__label">Quản lý tài khoản</span><i class="angle fe fe-chevron-right"></i> -->
+		<span class="side-menu__label"><i class="fa fa-folder-o"></i> Danh mục nhân viên</span><i class="angle fa fa-caret-right"></i>
 	</a>
 	<ul class="slide-menu" data-menu="nv">
 		<li class="panel sidetab-menu">
@@ -27,13 +25,10 @@ use app\modules\nhanvien\models\NhanVien;
 						<ul class="sidemenu-list">
 							<li class="side-menu__label1"><a href="javascript:void(0)">Danh mục chức năng</a>
 							</li>
-							<li class=""><a href="<?= Yii::getAlias('@web/nhanvien/nhan-vien?menu=nv1') ?>" class="slide-item" data-menu="nv1">Danh sách nhân viên</a>
+							<li><a href="<?= Yii::getAlias('@web/nhanvien/nhan-vien?menu=nv1') ?>" class="slide-item" data-menu="nv1"><i class="fe fe-file-text"></i> Danh sách nhân viên</a>
 							</li>
-							<li><a href="/kholuutru/loai-file/index?doiTuong=<?= NhanVien::MODEL_ID ?>&menu=nv2" class="slide-item" data-menu="nv2">Loại hồ sơ</a></li>
-						
-							
+							<li><a href="<?= Yii::getAlias('@web/nhanvien/phong-ban?menu=nv2') ?>" class="slide-item" data-menu="nv2"><i class="fe fe-file-text"></i> Danh sách phòng ban</a>
 							</li>
-							
 						</ul>
 						<div class="menutabs-content px-0">
 							<!-- menu tab here -->

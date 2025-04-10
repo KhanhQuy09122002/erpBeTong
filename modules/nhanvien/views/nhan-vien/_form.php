@@ -6,6 +6,7 @@ use app\modules\user\models\User;
 use yii\helpers\ArrayHelper;
 use app\widgets\CardWidget;
 use kartik\date\DatePicker;
+use app\custom\CustomFunc;
 /* @var $this yii\web\View */
 /* @var $model app\modules\nhanvien\models\NhanVien */
 /* @var $form yii\widgets\ActiveForm */
@@ -24,9 +25,12 @@ $listTaiKhoan = ArrayHelper::map($taiKhoans, 'id', 'username');
 
 ?>
 
+<?php
+$model->ngay_sinh = CustomFunc::convertYMDToDMY($model->ngay_sinh);
 
+?>
 
-<div class="nhan-vien-form">
+<div class="nhan-vien-form" id = "pbContent">
 
     <?php $form = ActiveForm::begin(); ?>
     <?php CardWidget::begin(['title'=>'Thông tin cá nhân Nhân viên']) ?>
@@ -59,7 +63,7 @@ $listTaiKhoan = ArrayHelper::map($taiKhoans, 'id', 'username');
             <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
           </div>
           <div class="col-lg-3 col-md-6">
-            <?= $form->field($model, 'dien_thoai')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'so_dien_thoai')->textInput(['maxlength' => true]) ?>
           </div>
           <div class="col-lg-3 col-md-6">
               <?= $form->field($model, 'tai_khoan')->dropDownList(
@@ -73,56 +77,60 @@ $listTaiKhoan = ArrayHelper::map($taiKhoans, 'id', 'username');
         
         <?php CardWidget::begin(['title'=>'Thông tin công việc Nhân viên']) ?>
            <div class="row">
-             <div class="col-lg-3 col-md-6">
-                 <?= $form->field($model, 'id_phong_ban')->dropDownList(
-                    $listPhongBan,
-                       [
-                          'prompt' => 'Chọn phòng ban...',
-                          'id' => 'phong-bans-dropdown'
-                       ]
-                ) ?>
-             </div>
-             <div class="col-lg-3 col-md-6">
-                 <?= $form->field($model, 'id_to')->dropDownList(
-                   [],  
-                   ['prompt' => 'Chọn tổ...', 'id' => 'to-dropdown']
-                 ) ?>
-             </div>
+           <div class="col-lg-3 col-md-6">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0">Phòng ban</label>
+                        <?= Html::a('<i class="fa fa-plus"> </i>', 
+                                             ['/nhanvien/nhan-vien/insert-phong-ban'],
+                                                [
+                                                   'class' => 'btn ripple btn-primary btn-sm',
+                                                   'title' => 'Cập nhật',
+                                                   'style' => 'color: white;font-size: 0.6rem;padding: 0.2rem 0.5rem;',
+                                                   'role' => 'modal-remote-2',
+                                                ]
+                        ) ?>
+                        <?= Html::a('<i class="fa fa-cog"> </i>', 
+                                             ['/nhanvien/nhan-vien/setting-phong-ban'],
+                                                [
+                                                   'class' => 'btn ripple btn-success btn-sm',
+                                                   'title' => 'Cài đặt',
+                                                   'style' => 'color: white;font-size: 0.6rem;padding: 0.2rem 0.5rem;',
+                                                   'role' => 'modal-remote-2',
+                                                ]
+                        ) ?>
+                </div>
+   
+               <div class="mt-1">
+                   <?= $form->field($model, 'id_phong_ban')->dropDownList(
+                       $listPhongBan,
+                         [
+                           'prompt' => 'Chọn phòng ban...',
+                           'id' => 'phong-bans-dropdown',
+                         ]
+                   )->label(false) ?>
+               </div>
+          </div>
+         
              <div class="col-lg-3 col-md-6">
                  <?= $form->field($model, 'chuc_vu')->textInput(['maxlength' => true]) ?>
              </div>
+ 
              <div class="col-lg-3 col-md-6">
-                 <?= $form->field($model, 'chuyen_nganh')->textInput(['maxlength' => true]) ?>
-             </div>
-             <div class="col-lg-3 col-md-6">
-                 <?= $form->field($model, 'vi_tri_cong_viec')->textInput(['maxlength' => true]) ?>
-             </div>
-             <div class="col-lg-3 col-md-6">
-                 <?= $form->field($model, 'ma_so_thue')->textInput(['maxlength' => true]) ?>
-             </div>
+            <?= $form->field($model, 'trinh_do')->textInput(['maxlength' => true]) ?>
+        </div> 
              <div class="col-lg-3 col-md-6">
                 <?= $form->field($model, 'trang_thai')->dropDownList([
                    'Đang làm việc' => 'Đang làm việc',
+                   'Tạm nghỉ'=>'Tạm nghỉ',
                    'Đã nghỉ việc' => 'Đã nghỉ việc',
                 ], ['prompt' => 'Chọn trạng thái']) ?>
              </div>
-             <div class="col-lg-3 col-md-6">
-               <?= $form->field($model, 'doi_tuong', [
-                  'template' => "{label}<br>{input}\n{error}",
-                   ])->checkbox(['class' => 'form-check-input ','id'=>'gray-checkbox'], false) ?>
-               </div>
-             </div>
-    <?php CardWidget::end() ?>
-    <?php CardWidget::begin(['title'=>'Thông tin chuyên môn']) ?>
-    <div class="row">
-        <div class="col-lg-3 col-md-6">
-            <?= $form->field($model, 'trinh_do')->textInput(['maxlength' => true]) ?>
-        </div> 
-       <div class="col-lg-9 col-md-12">
-            <?= $form->field($model, 'kinh_nghiem_lam_viec')->textarea(['rows' => 6]) ?>
-       </div>
-    </div>
-    <?php CardWidget::end() ?>
+
+
+    
+ 
+            
+        <?php CardWidget::end() ?>
     <?php if (!Yii::$app->request->isAjax) { ?>
         <div class="form-group">
             <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

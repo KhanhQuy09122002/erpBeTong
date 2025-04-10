@@ -25,6 +25,7 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
+        $this->view->title = 'PHẦN MỀM ERP - NGUYỄN TRÌNH';
         return $this->render('index');
     }
 }
